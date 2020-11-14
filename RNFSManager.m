@@ -10,7 +10,7 @@
 
 #import "NSArray+Map.h"
 #import "Downloader.h"
-#import "Uploader.h"
+// #import "Uploader.h"
 
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
@@ -29,7 +29,7 @@
 
 @property (retain) NSMutableDictionary* downloaders;
 @property (retain) NSMutableDictionary* uuids;
-@property (retain) NSMutableDictionary* uploaders;
+// @property (retain) NSMutableDictionary* uploaders;
 
 @end
 
@@ -609,77 +609,77 @@ RCT_EXPORT_METHOD(completeHandlerIOS:(nonnull NSNumber *)jobId
     resolve(nil);
 }
 
-RCT_EXPORT_METHOD(uploadFiles:(NSDictionary *)options
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
-{
-  RNFSUploadParams* params = [RNFSUploadParams alloc];
+// RCT_EXPORT_METHOD(uploadFiles:(NSDictionary *)options
+//                   resolver:(RCTPromiseResolveBlock)resolve
+//                   rejecter:(RCTPromiseRejectBlock)reject)
+// {
+//   RNFSUploadParams* params = [RNFSUploadParams alloc];
 
-  NSNumber* jobId = options[@"jobId"];
-  params.toUrl = options[@"toUrl"];
-  params.files = options[@"files"];
-  params.binaryStreamOnly = [[options objectForKey:@"binaryStreamOnly"] boolValue];
-  NSDictionary* headers = options[@"headers"];
-  NSDictionary* fields = options[@"fields"];
-  NSString* method = options[@"method"];
-  params.headers = headers;
-  params.fields = fields;
-  params.method = method;
-  bool hasBeginCallback = [options[@"hasBeginCallback"] boolValue];
-  bool hasProgressCallback = [options[@"hasProgressCallback"] boolValue];
+//   NSNumber* jobId = options[@"jobId"];
+//   params.toUrl = options[@"toUrl"];
+//   params.files = options[@"files"];
+//   params.binaryStreamOnly = [[options objectForKey:@"binaryStreamOnly"] boolValue];
+//   NSDictionary* headers = options[@"headers"];
+//   NSDictionary* fields = options[@"fields"];
+//   NSString* method = options[@"method"];
+//   params.headers = headers;
+//   params.fields = fields;
+//   params.method = method;
+//   bool hasBeginCallback = [options[@"hasBeginCallback"] boolValue];
+//   bool hasProgressCallback = [options[@"hasProgressCallback"] boolValue];
 
-  params.completeCallback = ^(NSString* body, NSURLResponse *resp) {
-    [self.uploaders removeObjectForKey:[jobId stringValue]];
+//   params.completeCallback = ^(NSString* body, NSURLResponse *resp) {
+//     [self.uploaders removeObjectForKey:[jobId stringValue]];
 
-    NSMutableDictionary* result = [[NSMutableDictionary alloc] initWithDictionary: @{@"jobId": jobId,
-                                                                                     @"body": body}];
-    if ([resp isKindOfClass:[NSHTTPURLResponse class]]) {
-      [result setValue:((NSHTTPURLResponse *)resp).allHeaderFields forKey:@"headers"];
-      [result setValue:[NSNumber numberWithUnsignedInteger:((NSHTTPURLResponse *)resp).statusCode] forKey:@"statusCode"];
-    }
-    return resolve(result);
-  };
+//     NSMutableDictionary* result = [[NSMutableDictionary alloc] initWithDictionary: @{@"jobId": jobId,
+//                                                                                      @"body": body}];
+//     if ([resp isKindOfClass:[NSHTTPURLResponse class]]) {
+//       [result setValue:((NSHTTPURLResponse *)resp).allHeaderFields forKey:@"headers"];
+//       [result setValue:[NSNumber numberWithUnsignedInteger:((NSHTTPURLResponse *)resp).statusCode] forKey:@"statusCode"];
+//     }
+//     return resolve(result);
+//   };
 
-  params.errorCallback = ^(NSError* error) {
-    [self.uploaders removeObjectForKey:[jobId stringValue]];
-    return [self reject:reject withError:error];
-  };
+//   params.errorCallback = ^(NSError* error) {
+//     [self.uploaders removeObjectForKey:[jobId stringValue]];
+//     return [self reject:reject withError:error];
+//   };
 
-  if (hasBeginCallback) {
-    params.beginCallback = ^() {
-        if (self.bridge != nil)
-          [self sendEventWithName:@"UploadBegin"
-                                                  body:@{@"jobId": jobId}];
-    };
-  }
+//   if (hasBeginCallback) {
+//     params.beginCallback = ^() {
+//         if (self.bridge != nil)
+//           [self sendEventWithName:@"UploadBegin"
+//                                                   body:@{@"jobId": jobId}];
+//     };
+//   }
 
-  if (hasProgressCallback) {
-    params.progressCallback = ^(NSNumber* totalBytesExpectedToSend, NSNumber* totalBytesSent) {
-        if (self.bridge != nil)
-            [self sendEventWithName:@"UploadProgress"
-                                                  body:@{@"jobId": jobId,
-                                                          @"totalBytesExpectedToSend": totalBytesExpectedToSend,
-                                                          @"totalBytesSent": totalBytesSent}];
-    };
-  }
+//   if (hasProgressCallback) {
+//     params.progressCallback = ^(NSNumber* totalBytesExpectedToSend, NSNumber* totalBytesSent) {
+//         if (self.bridge != nil)
+//             [self sendEventWithName:@"UploadProgress"
+//                                                   body:@{@"jobId": jobId,
+//                                                           @"totalBytesExpectedToSend": totalBytesExpectedToSend,
+//                                                           @"totalBytesSent": totalBytesSent}];
+//     };
+//   }
 
-  if (!self.uploaders) self.uploaders = [[NSMutableDictionary alloc] init];
+//   if (!self.uploaders) self.uploaders = [[NSMutableDictionary alloc] init];
 
-  RNFSUploader* uploader = [RNFSUploader alloc];
+//   RNFSUploader* uploader = [RNFSUploader alloc];
 
-  [uploader uploadFiles:params];
+//   [uploader uploadFiles:params];
 
-  [self.uploaders setValue:uploader forKey:[jobId stringValue]];
-}
+//   [self.uploaders setValue:uploader forKey:[jobId stringValue]];
+// }
 
-RCT_EXPORT_METHOD(stopUpload:(nonnull NSNumber *)jobId)
-{
-  RNFSUploader* uploader = [self.uploaders objectForKey:[jobId stringValue]];
+// RCT_EXPORT_METHOD(stopUpload:(nonnull NSNumber *)jobId)
+// {
+//   RNFSUploader* uploader = [self.uploaders objectForKey:[jobId stringValue]];
 
-  if (uploader != nil) {
-    [uploader stopUpload];
-  }
-}
+//   if (uploader != nil) {
+//     [uploader stopUpload];
+//   }
+// }
 
 RCT_EXPORT_METHOD(pathForBundle:(NSString *)bundleNamed
                   resolver:(RCTPromiseResolveBlock)resolve
@@ -746,165 +746,165 @@ RCT_EXPORT_METHOD(getFSInfo:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
 }
 
 
-// [PHAsset fetchAssetsWithALAssetURLs] is deprecated and not supported in Mac Catalyst
-#if !TARGET_OS_UIKITFORMAC
-/**
- * iOS Only: copy images from the assets-library (camera-roll) to a specific path, asuming
- * JPEG-Images.
- *
- * Video-Support:
- *
- * One can use this method also to create a thumbNail from a video.
- * Currently it is impossible to specify a concrete position, the OS will decide wich
- * Thumbnail you'll get then.
- * To copy a video from assets-library and save it as a mp4-file, use the method
- * copyAssetsVideoIOS.
- *
- * It is also supported to scale the image via scale-factor (0.0-1.0) or with a specific
- * width and height. Also the resizeMode will be considered.
- */
-RCT_EXPORT_METHOD(copyAssetsFileIOS: (NSString *) imageUri
-                  toFilepath: (NSString *) destination
-                  width: (NSInteger) width
-                  height: (NSInteger) height
-                  scale: (CGFloat) scale
-                  compression: (CGFloat) compression
-                  resizeMode: (RCTResizeMode) resizeMode
-                  resolver: (RCTPromiseResolveBlock) resolve
-                  rejecter: (RCTPromiseRejectBlock) reject)
+// // [PHAsset fetchAssetsWithALAssetURLs] is deprecated and not supported in Mac Catalyst
+// #if !TARGET_OS_UIKITFORMAC
+// /**
+//  * iOS Only: copy images from the assets-library (camera-roll) to a specific path, asuming
+//  * JPEG-Images.
+//  *
+//  * Video-Support:
+//  *
+//  * One can use this method also to create a thumbNail from a video.
+//  * Currently it is impossible to specify a concrete position, the OS will decide wich
+//  * Thumbnail you'll get then.
+//  * To copy a video from assets-library and save it as a mp4-file, use the method
+//  * copyAssetsVideoIOS.
+//  *
+//  * It is also supported to scale the image via scale-factor (0.0-1.0) or with a specific
+//  * width and height. Also the resizeMode will be considered.
+//  */
+// RCT_EXPORT_METHOD(copyAssetsFileIOS: (NSString *) imageUri
+//                   toFilepath: (NSString *) destination
+//                   width: (NSInteger) width
+//                   height: (NSInteger) height
+//                   scale: (CGFloat) scale
+//                   compression: (CGFloat) compression
+//                   resizeMode: (RCTResizeMode) resizeMode
+//                   resolver: (RCTPromiseResolveBlock) resolve
+//                   rejecter: (RCTPromiseRejectBlock) reject)
 
-{
-    CGSize size = CGSizeMake(width, height);
+// {
+//     CGSize size = CGSizeMake(width, height);
 
-    NSURL* url = [NSURL URLWithString:imageUri];
-    PHFetchResult *results = nil;
-    if ([url.scheme isEqualToString:@"ph"]) {
-        results = [PHAsset fetchAssetsWithLocalIdentifiers:@[[imageUri substringFromIndex: 5]] options:nil];
-    } else {
-        results = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-    }
+//     NSURL* url = [NSURL URLWithString:imageUri];
+//     PHFetchResult *results = nil;
+//     if ([url.scheme isEqualToString:@"ph"]) {
+//         results = [PHAsset fetchAssetsWithLocalIdentifiers:@[[imageUri substringFromIndex: 5]] options:nil];
+//     } else {
+//         results = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+//     }
 
-    if (results.count == 0) {
-        NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", imageUri];
+//     if (results.count == 0) {
+//         NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", imageUri];
 
-        NSMutableDictionary* details = [NSMutableDictionary dictionary];
-        [details setValue:errorText forKey:NSLocalizedDescriptionKey];
-        NSError *error = [NSError errorWithDomain:@"RNFS" code:500 userInfo:details];
-        [self reject: reject withError:error];
-        return;
-    }
+//         NSMutableDictionary* details = [NSMutableDictionary dictionary];
+//         [details setValue:errorText forKey:NSLocalizedDescriptionKey];
+//         NSError *error = [NSError errorWithDomain:@"RNFS" code:500 userInfo:details];
+//         [self reject: reject withError:error];
+//         return;
+//     }
 
-    PHAsset *asset = [results firstObject];
-    PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
+//     PHAsset *asset = [results firstObject];
+//     PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
 
-    // Allow us to fetch images from iCloud
-    imageOptions.networkAccessAllowed = YES;
+//     // Allow us to fetch images from iCloud
+//     imageOptions.networkAccessAllowed = YES;
 
 
-    // Note: PhotoKit defaults to a deliveryMode of PHImageRequestOptionsDeliveryModeOpportunistic
-    // which means it may call back multiple times - we probably don't want that
-    imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+//     // Note: PhotoKit defaults to a deliveryMode of PHImageRequestOptionsDeliveryModeOpportunistic
+//     // which means it may call back multiple times - we probably don't want that
+//     imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
 
-    BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
-    CGSize targetSize;
-    if (useMaximumSize) {
-        targetSize = PHImageManagerMaximumSize;
-        imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
-    } else {
-        targetSize = CGSizeApplyAffineTransform(size, CGAffineTransformMakeScale(scale, scale));
-        imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
-    }
+//     BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
+//     CGSize targetSize;
+//     if (useMaximumSize) {
+//         targetSize = PHImageManagerMaximumSize;
+//         imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
+//     } else {
+//         targetSize = CGSizeApplyAffineTransform(size, CGAffineTransformMakeScale(scale, scale));
+//         imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
+//     }
 
-    PHImageContentMode contentMode = PHImageContentModeAspectFill;
-    if (resizeMode == RCTResizeModeContain) {
-        contentMode = PHImageContentModeAspectFit;
-    }
+//     PHImageContentMode contentMode = PHImageContentModeAspectFill;
+//     if (resizeMode == RCTResizeModeContain) {
+//         contentMode = PHImageContentModeAspectFit;
+//     }
 
-    // PHImageRequestID requestID =
-    [[PHImageManager defaultManager] requestImageForAsset:asset
-                                               targetSize:targetSize
-                                              contentMode:contentMode
-                                                  options:imageOptions
-                                            resultHandler:^(UIImage *result, NSDictionary<NSString *, id> *info) {
-        if (result) {
+//     // PHImageRequestID requestID =
+//     [[PHImageManager defaultManager] requestImageForAsset:asset
+//                                                targetSize:targetSize
+//                                               contentMode:contentMode
+//                                                   options:imageOptions
+//                                             resultHandler:^(UIImage *result, NSDictionary<NSString *, id> *info) {
+//         if (result) {
 
-            NSData *imageData = UIImageJPEGRepresentation(result, compression );
-            [imageData writeToFile:destination atomically:YES];
-            resolve(destination);
+//             NSData *imageData = UIImageJPEGRepresentation(result, compression );
+//             [imageData writeToFile:destination atomically:YES];
+//             resolve(destination);
 
-        } else {
-            NSMutableDictionary* details = [NSMutableDictionary dictionary];
-            [details setValue:info[PHImageErrorKey] forKey:NSLocalizedDescriptionKey];
-            NSError *error = [NSError errorWithDomain:@"RNFS" code:501 userInfo:details];
-            [self reject: reject withError:error];
+//         } else {
+//             NSMutableDictionary* details = [NSMutableDictionary dictionary];
+//             [details setValue:info[PHImageErrorKey] forKey:NSLocalizedDescriptionKey];
+//             NSError *error = [NSError errorWithDomain:@"RNFS" code:501 userInfo:details];
+//             [self reject: reject withError:error];
 
-        }
-    }];
-}
-#endif
+//         }
+//     }];
+// }
+// #endif
 
-// [PHAsset fetchAssetsWithALAssetURLs] is deprecated and not supported in Mac Catalyst
-#if !TARGET_OS_UIKITFORMAC
-/**
- * iOS Only: copy videos from the assets-library (camera-roll) to a specific path as mp4-file.
- *
- * To create a thumbnail from the video, refer to copyAssetsFileIOS
- */
-RCT_EXPORT_METHOD(copyAssetsVideoIOS: (NSString *) imageUri
-                  atFilepath: (NSString *) destination
-                  resolver: (RCTPromiseResolveBlock) resolve
-                  rejecter: (RCTPromiseRejectBlock) reject)
-{
-  NSURL* url = [NSURL URLWithString:imageUri];
-  //unused?
-  //__block NSURL* videoURL = [NSURL URLWithString:destination];
-  __block NSError *error = nil;
+// // [PHAsset fetchAssetsWithALAssetURLs] is deprecated and not supported in Mac Catalyst
+// #if !TARGET_OS_UIKITFORMAC
+// /**
+//  * iOS Only: copy videos from the assets-library (camera-roll) to a specific path as mp4-file.
+//  *
+//  * To create a thumbnail from the video, refer to copyAssetsFileIOS
+//  */
+// RCT_EXPORT_METHOD(copyAssetsVideoIOS: (NSString *) imageUri
+//                   atFilepath: (NSString *) destination
+//                   resolver: (RCTPromiseResolveBlock) resolve
+//                   rejecter: (RCTPromiseRejectBlock) reject)
+// {
+//   NSURL* url = [NSURL URLWithString:imageUri];
+//   //unused?
+//   //__block NSURL* videoURL = [NSURL URLWithString:destination];
+//   __block NSError *error = nil;
 
-  PHFetchResult *phAssetFetchResult = nil;
-  if ([url.scheme isEqualToString:@"ph"]) {
-      phAssetFetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[[imageUri substringFromIndex: 5]] options:nil];
-  } else {
-      phAssetFetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-  }
+//   PHFetchResult *phAssetFetchResult = nil;
+//   if ([url.scheme isEqualToString:@"ph"]) {
+//       phAssetFetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[[imageUri substringFromIndex: 5]] options:nil];
+//   } else {
+//       phAssetFetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+//   }
 
-  PHAsset *phAsset = [phAssetFetchResult firstObject];
+//   PHAsset *phAsset = [phAssetFetchResult firstObject];
 
-  PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-  options.networkAccessAllowed = YES;
-  options.version = PHVideoRequestOptionsVersionOriginal;
-  options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+//   PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+//   options.networkAccessAllowed = YES;
+//   options.version = PHVideoRequestOptionsVersionOriginal;
+//   options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
 
-  dispatch_group_t group = dispatch_group_create();
-  dispatch_group_enter(group);
+//   dispatch_group_t group = dispatch_group_create();
+//   dispatch_group_enter(group);
 
-  [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+//   [[PHImageManager defaultManager] requestAVAssetForVideo:phAsset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
 
-    if ([asset isKindOfClass:[AVURLAsset class]]) {
-      NSURL *url = [(AVURLAsset *)asset URL];
-      NSLog(@"Final URL %@",url);
-      NSData *videoData = [NSData dataWithContentsOfURL:url];
+//     if ([asset isKindOfClass:[AVURLAsset class]]) {
+//       NSURL *url = [(AVURLAsset *)asset URL];
+//       NSLog(@"Final URL %@",url);
+//       NSData *videoData = [NSData dataWithContentsOfURL:url];
 
-      BOOL writeResult = [videoData writeToFile:destination options:NSDataWritingAtomic error:&error];
+//       BOOL writeResult = [videoData writeToFile:destination options:NSDataWritingAtomic error:&error];
 
-      if(writeResult) {
-        NSLog(@"video success");
-      }
-      else {
-        NSLog(@"video failure");
-      }
-      dispatch_group_leave(group);
-    }
-  }];
-  dispatch_group_wait(group,  DISPATCH_TIME_FOREVER);
+//       if(writeResult) {
+//         NSLog(@"video success");
+//       }
+//       else {
+//         NSLog(@"video failure");
+//       }
+//       dispatch_group_leave(group);
+//     }
+//   }];
+//   dispatch_group_wait(group,  DISPATCH_TIME_FOREVER);
 
-  if (error) {
-    NSLog(@"RNFS: %@", error);
-    return [self reject:reject withError:error];
-  }
+//   if (error) {
+//     NSLog(@"RNFS: %@", error);
+//     return [self reject:reject withError:error];
+//   }
 
-  return resolve(destination);
-}
-#endif
+//   return resolve(destination);
+// }
+// #endif
 
 RCT_EXPORT_METHOD(touch:(NSString*)filepath
                   mtime:(NSDate *)mtime
@@ -968,10 +968,10 @@ RCT_EXPORT_METHOD(touch:(NSString*)filepath
            @"RNFSLibraryDirectoryPath": [self getPathForDirectory:NSLibraryDirectory],
            @"RNFSFileTypeRegular": NSFileTypeRegular,
            @"RNFSFileTypeDirectory": NSFileTypeDirectory,
-           @"RNFSFileProtectionComplete": NSFileProtectionComplete,
-           @"RNFSFileProtectionCompleteUnlessOpen": NSFileProtectionCompleteUnlessOpen,
-           @"RNFSFileProtectionCompleteUntilFirstUserAuthentication": NSFileProtectionCompleteUntilFirstUserAuthentication,
-           @"RNFSFileProtectionNone": NSFileProtectionNone
+          //  @"RNFSFileProtectionComplete": NSFileProtectionComplete,
+          //  @"RNFSFileProtectionCompleteUnlessOpen": NSFileProtectionCompleteUnlessOpen,
+          //  @"RNFSFileProtectionCompleteUntilFirstUserAuthentication": NSFileProtectionCompleteUntilFirstUserAuthentication,
+          //  @"RNFSFileProtectionNone": NSFileProtectionNone
           };
 }
 

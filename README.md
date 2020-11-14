@@ -13,7 +13,8 @@ For RN >= 0.61 please install react-native-fs at version >= @2.16.0!
 ## Table of Contents
 1. [Changelog](#Changelog)
 1. Usage
-    1. [iOS](#usage-ios)
+    1. [iOS](#usage-ios) -- remove Uploader ,  copyAssetsVideoIOS, copyAssetsFileIOS , RNFSFileProtection.
+    1. [macOS] -- remove Uploader ,  copyAssetsVideoIOS, copyAssetsFileIOS , RNFSFileProtection.
     1. [Android](#usage-android)
     1. [Windows](#usage-windows)
 1. [Examples](#Examples)
